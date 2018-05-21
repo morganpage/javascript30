@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>AFRAME</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    
+    <script src="https://aframe.io/releases/0.8.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
+
+    <script>
+        AFRAME.registerComponent('cursor-listener', {
+        init: function () {
+            var lastIndex = -1;
+            var COLORS = ['red', 'green', 'blue'];
+            this.el.addEventListener('click', function (evt) {
+            lastIndex = (lastIndex + 1) % COLORS.length;
+            this.setAttribute('material', 'color', COLORS[lastIndex]);
+            console.log('I was clicked at: ', evt.detail.intersection.point);
+            });
+        }
+        });    
+    
+    
+    </script>
+
+
+</head>
+<body>
+    <a-scene>
+        <a-sky color="#ECECEC"></a-sky>
+        <a-entity light="type: ambient; color: #FFF"></a-entity>
+        <a-entity light="type: directional; color: #FFF; intensity: 0.5" position="-1 1 0"></a-entity>
+
+        <a-entity position="17 100 -30" rotation="0 90 0" gltf-model="url(WoodenCube.gltf)"></a-entity>
+
+        <a-assets>
+            <a-asset-item id="Kitchen_Furniture_1-obj" src="Kitchen_Furniture_1.obj"></a-asset-item>
+            <a-asset-item id="Kitchen_Furniture_1-mtl" src="Kitchen_Furniture_1.mtl"></a-asset-item>
+            <video id="penguin-sledding" autoplay loop="true" src="test.mp4"></video>
+        </a-assets>
+            
+        <a-entity  position="0 0 -4" rotation="0 90 0"  obj-model="obj: #Kitchen_Furniture_1-obj; mtl: #Kitchen_Furniture_1-mtl"></a-entity>
+
+        <a-entity material="shader: chromakey; src: #penguin-sledding; color: 0 1.0 0" 
+            geometry="primitive:plane;width:1.78" position="0 0 -9.058"
+            scale="6 6 6">
+        </a-entity>
+
+
+
+        
+
+        <a-entity cursor raycaster="far: 20; interval: 1000; objects: .clickable"></a-entity>
+        <a-entity camera look-controls>
+            <a-entity cursor="fuse: true; fuseTimeout: 500"
+                position="0 0 -1"
+                geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+                material="color: black; shader: flat">
+            </a-entity>
+        </a-entity>
+        <a-entity id="box" cursor-listener geometry="primitive: box" material="color: blue" position="0 0 -3"></a-entity>        
+
+    </a-scene>
+    
+</body>
+</html>
