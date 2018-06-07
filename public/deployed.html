@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+.item1 { grid-area: header; }
+.sidebar { grid-area: sidebar; }
+.import { grid-area: import; }
+.export { grid-area: export; }
+.item5 { grid-area: footer; }
+
+.grid-container {
+  display: grid;
+  grid-template-areas:
+    'header header header header header header'
+    'import import import export export sidebar'
+    'footer footer footer footer footer footer';
+  grid-gap: 10px;
+  background-color: #2196F3;
+  padding: 10px;
+}
+.grid-container > div {
+  background-color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  padding: 20px 0;
+  font-size: 30px;
+}
+.textInput {
+  min-height: 100px;
+  height: 300px;
+  min-width: 25px;
+  width: 80%;
+}
+
+.export__pastebutton {
+  height:34px;
+}
+
+input { font-size: 24px; }
+textarea { font-size: 24px; }
+</style>
+</head>
+<body>
+
+
+<div class="grid-container">
+  <div class="item1">Deployed Prototyping</div>
+  <div class="sidebar">
+    <h1>Stats</h1>
+    <p id="stats">Some stats in here</p>
+  </div>
+  <div class="import">
+    <h1>Text import</h1>
+    <p>Text will be imported here</p>
+    <textarea id="original" class="textInput">
+Customer: Deployed
+Provider: Dual Good Health Limited
+Start Date: 9th April 2018
+End Date: 1st June 2018
+
+Solution
+
+We propose the creation of a web application that can upload a document and analyze its content in various ways. The document will be held securely in an online datastore against a users credentials, hence the need for secure login capability. The datastore and hosting will be supplied by Google, further information about this service, GDPR compliance and security can be found here. We feel that using a secure back-end service is right for this project at this stage as this lowers development and support costs.
+
+
+
+
+
+    </textarea><br>
+    <button class="import__convertbutton">Convert</button>
+  </div>  
+  <div class="export">
+      <h1>Text export</h1>
+      <p>Text will be exported here</p>
+
+      <table style="width:60%" table align="center">
+          <tr>
+              <td><button data-field="supplier" class="export__pastebutton">></button></td>
+              <td>Supplier</td>
+            <td><input type="text" name="supplier"></td>
+          </tr>
+          <tr>
+              <td><button data-field="startdate" class="export__pastebutton">></button></td>
+              <td>Start</td>
+              <td><input type="text" name="startdate"></td>
+          </tr>
+          <tr>
+              <td ><button data-field="enddate" class="export__pastebutton">></button></td>
+              <td>End</td>
+              <td><input type="text" name="enddate"></td>
+          </tr>
+          <tr>
+              <td ><button data-field="scopeofwork" class="export__pastebutton">></button></td>
+              <td>SOW</td>
+              <td><textarea name="scopeofwork"></textarea></td>
+          </tr>
+      </table>
+
+  </div>
+  <div class="item5">By Dual Good Limited</div>
+</div>
+
+
+<script src="moment.js"></script>
+<!-- <script src="date_fns.js"></script> -->
+
+<script>
+  const textInput = document.querySelector('.textInput');
+  const convertButton = document.querySelector('.import__convertbutton');
+  const pasteButtons = document.querySelectorAll('[data-field]');
+  const stats = document.querySelector('#stats');
+  const supplier = document.querySelector('[name="supplier"]');
+  const startdate = document.querySelector('[name="startdate"]');
+  const enddate = document.querySelector('[name="enddate"]');
+
+  convertButton.addEventListener('click',fnConvert);
+  pasteButtons.forEach(button => button.addEventListener('click',pasteField));
+
+  function pasteField(){
+    console.log(this.dataset.field);
+    const pasteTextField = document.querySelector(`[name="${this.dataset.field}"]`);
+    pasteTextField.value = window.getSelection().toString();
+    fnUpdateStats();
+  }
+
+  function fnConvert(){
+    console.log(textInput.value);
+    console.log(window.getSelection().toString());
+    console.log(fnSearchStrip("Supplier: ",textInput.value));
+    supplier.value = fnSearchStrip("Supplier: ",textInput.value);
+    if(fnSearchStrip("Supplier: ",textInput.value) == ""){
+      supplier.value = fnSearchStrip("Provider: ",textInput.value);
+    }
+    startdate.value = fnSearchStrip("Start Date: ",textInput.value);
+    enddate.value = fnSearchStrip("End Date: ",textInput.value);
+    fnUpdateStats();
+  }
+
+  function fnUpdateStats(){
+    var start = startdate.value;
+    var end = enddate.value;
+    var startDate = moment(start, "DD MMM YYYY");
+    var endDate = moment(end, "DD MMM YYYY");
+    console.log(startDate);
+    var duration = moment.duration(endDate.diff(startDate));
+    console.log(duration.asDays());
+    if(!isNaN(duration)){
+      stats.textContent = `Days: ${duration.asDays()}`;
+    }else {
+      stats.textContent = "";
+    }
+  }
+
+
+
+  function fnSearchStrip(searchfor,alltext) {
+    var lines = alltext.split("\n");
+    lines.forEach(line => {
+      console.log(line)
+    })
+    const result = lines.filter(line => line.includes(searchfor)).map(x => x.substring(x.indexOf(searchfor)+searchfor.length,x.length));
+    console.log(result);
+    if(result.length == 0)
+      return '';
+    else
+      return result[0];  
+  }
+
+</script>
+
+
+
+</body>
+</html>
